@@ -124,7 +124,7 @@ def train_model(
         print(f'Epoch: {e}')
         running_loss = 0.0
         for i, (inputs, targets) in tqdm(enumerate(train_loader), total=len(train_loader)):
-            # inputs = preprocess_batch_fun(inputs)
+            inputs = preprocess_batch_fun(inputs)
             inputs, targets = inputs.to(device), targets.to(device)
 
             outputs = model(inputs)
