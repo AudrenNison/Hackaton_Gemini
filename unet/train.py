@@ -60,26 +60,14 @@ def print_mean_iou(targets: torch.Tensor, preds: torch.Tensor) -> None:
     print(f"meanIOU (over existing classes in targets): {mean_iou:.4f}")
 
 
-def preprocess_batch_august(input_batch):
+def preprocess_batch_all(input_batch):
     """
-    Here we want to use the collapse the temporal dimension of the input
-    batch by keeping only the first image of the month of august
-
+    This function processes the input batch without collapsing the temporal dimension and takes all images.
+    
     input_batch: dataloader X dict batch
     """
-    L= []
-    for i in range(input_batch["date"].shape[0]):
-        L.append(torch.where(input_batch["date"][i,:,1] == 8)[0][0])
-    indices_T_picked = torch.tensor(L)
-    # Expand indices by creating a (B, 1, C, H, W) gather mask
-    expanded_indices = indices_T_picked.view(-1, 1, 1, 1, 1).expand(-1, 1,
-                                                                input_batch["S2"].size(2), input_batch["S2"].size(3),
-                                                                input_batch["S2"].size(4))
-    
-    # Gather the values along the second dimension based on the indices
-    collapsed_input_batch = torch.gather(input_batch["S2"], dim=1, index=expanded_indices).squeeze(1)
-
-    return collapsed_input_batch
+    # Simply return the input batch without filtering for any specific month
+    return input_batch["S2"]
 
 def train_model(
     data_folder: Path,
