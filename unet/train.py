@@ -60,7 +60,7 @@ def print_mean_iou(targets: torch.Tensor, preds: torch.Tensor) -> None:
     print(f"meanIOU (over existing classes in targets): {mean_iou:.4f}")
 
 
-def preprocess_batch_all(input_batch):
+def preprocess_batch_august(input_batch):
     """
     This function processes the input batch without collapsing the temporal dimension and takes all images.
     
