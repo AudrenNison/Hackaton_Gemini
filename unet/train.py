@@ -8,7 +8,7 @@ from tqdm import tqdm
 
 from baseline.collate import pad_collate
 from baseline.dataset import BaselineDataset
-from unet.model import UNET
+from unet.model import UNetWithAttention_HSI
 
 TRAIN_FILEPATH = "/Users/33783/Desktop/capgemini/hackathon-mines-invent-2024/DATA/TRAIN"
 
