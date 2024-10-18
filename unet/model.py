@@ -81,12 +81,23 @@ class TemporalAttention(nn.Module):
         self.softmax = nn.Softmax(dim=-1)
 
     def forward(self, x):
-        # x shape: [B, T, C, H, W]
-        B, T, C, H, W = x.size()
-        x_flat = x.view(B, T, -1)  # Flatten spatial dimensions
+        # Check if the input tensor has the expected dimensions
+        if len(x.size()) == 5:  # Expected shape [B, T, C, H, W]
+            B, T, C, H, W = x.size()
+        elif len(x.size()) == 4:  # Possibly [B, C, H, W], no temporal dimension
+            B, C, H, W = x.size()
+            T = 1  # Set time dimension to 1 if it's missing
+            x = x.unsqueeze(1)  # Add the time dimension to the tensor [B, 1, C, H, W]
+
+        # Flatten the spatial dimensions
+        x_flat = x.view(B, T, -1)  # Combine spatial dimensions H and W into one dimension
+        
+        # Apply attention
         attention_weights = self.softmax(torch.bmm(x_flat, x_flat.transpose(1, 2)))
         attention_output = torch.bmm(attention_weights, x_flat).view(B, T, C, H, W)
+        
         return attention_output
+
 
 class UNetWithAttention_HSI(nn.Module):
     def __init__(self, in_channels, out_channels):
