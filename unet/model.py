@@ -84,7 +84,7 @@ class TemporalAttention(nn.Module):
         # Check if the input tensor has the expected dimensions
         if len(x.size()) == 5:  # Expected shape [B, T, C, H, W]
             B, T, C, H, W = x.size()
-        elif len(x.size()) == 4:  # Possibly [B, C, H, W], no temporal dimension
+        else:  # Possibly [B, C, H, W], no temporal dimension
             B, C, H, W = x.size()
             T = 1  # Set time dimension to 1 if it's missing
             x = x.unsqueeze(1)  # Add the time dimension to the tensor [B, 1, C, H, W]
