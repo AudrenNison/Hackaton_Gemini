@@ -109,30 +109,34 @@ class UNetWithAttention_HSI(nn.Module):
         self.dec3 = ConvBlock3D(128, 64)
 
         self.final_conv = nn.Conv3d(64, out_channels, kernel_size=1)
-
+        
     def forward(self, x):
-        # Encoding path
+        # Swap the 2nd (time points) and 3rd (channels) dimensions: [B, 61, 10, 128, 128] -> [B, 10, 61, 128, 128]
+        x = x.transpose(1, 2)
+        
+        # Now proceed with the normal forward pass
         e1 = self.enc1(x)
         e2 = self.enc2(self.pool(e1))
         e3 = self.enc3(self.pool(e2))
         e4 = self.enc4(self.pool(e3))
-
-        # Temporal attention
+    
+        # Temporal attention (if applicable)
         e4 = self.attention(e4.unsqueeze(1))  # Assuming single time-step for demo
-
+    
         # Decoding + Skip connections
         d1 = self.upconv1(e4.squeeze(1))
         d1 = torch.cat([d1, e3], dim=1)
         d1 = self.dec1(d1)
-
+    
         d2 = self.upconv2(d1)
         d2 = torch.cat([d2, e2], dim=1)
         d2 = self.dec2(d2)
-
+    
         d3 = self.upconv3(d2)
         d3 = torch.cat([d3, e1], dim=1)
         d3 = self.dec3(d3)
-
+    
         out = self.final_conv(d3)
         return out
+
 
