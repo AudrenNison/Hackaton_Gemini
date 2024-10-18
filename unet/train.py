@@ -175,7 +175,7 @@ if __name__ == "__main__":
         data_folder=TRAIN_FILEPATH,
         nb_classes=20,
         input_channels=10,
-        model_path="models/unetNison1.pth",
+        model_path="kaggle/working/unetNison1.pth",
         preprocess_batch_fun=preprocess_batch_august,
         load_model=True,
         num_epochs=10,
