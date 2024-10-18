@@ -59,11 +59,11 @@ class UNET(nn.Module):
         return x 
 
 #####################################################################################################
-class ConvBlock(nn.Module):
+class ConvBlock3D(nn.Module):
     def __init__(self, in_channels, out_channels):
-        super(ConvBlock, self).__init__()
-        self.conv = nn.Conv2d(in_channels, out_channels, kernel_size=3, padding=1)
-        self.bn = nn.BatchNorm2d(out_channels)
+        super(ConvBlock3D, self).__init__()
+        self.conv = nn.Conv3d(in_channels, out_channels, kernel_size=3, padding=1)
+        self.bn = nn.BatchNorm3d(out_channels)
         self.relu = nn.ReLU(inplace=True)
     
     def forward(self, x):
@@ -71,6 +71,7 @@ class ConvBlock(nn.Module):
         x = self.bn(x)
         x = self.relu(x)
         return x
+
 
 class TemporalAttention(nn.Module):
     def __init__(self, channels, height, width):
@@ -87,28 +88,27 @@ class TemporalAttention(nn.Module):
         attention_output = torch.bmm(attention_weights, x_flat).view(B, T, C, H, W)
         return attention_output
 
-class UNetWithAttention_HSI(nn.Module):
+class UNetWithAttention_HSI_3D(nn.Module):
     def __init__(self, in_channels, out_channels):
-        super(UNetWithAttention_HSI, self).__init__()
-        self.enc1 = ConvBlock(in_channels, 64)
-        self.enc2 = ConvBlock(64, 128)
-        self.enc3 = ConvBlock(128, 256)
-        self.enc4 = ConvBlock(256, 512)
+        super(UNetWithAttention_HSI_3D, self).__init__()
+        self.enc1 = ConvBlock3D(in_channels, 64)
+        self.enc2 = ConvBlock3D(64, 128)
+        self.enc3 = ConvBlock3D(128, 256)
+        self.enc4 = ConvBlock3D(256, 512)
 
-        self.pool = nn.MaxPool2d(2)
+        self.pool = nn.MaxPool3d(2)
         
-        # Adjusted attention block for 128x128 input size
-        self.attention = TemporalAttention(512, 32, 32)  # Adjusted to match reduced feature size
+        self.attention = TemporalAttention(512, 32, 32)  # Temporal attention block remains 2D
         
-        self.upconv1 = nn.ConvTranspose2d(512, 256, kernel_size=2, stride=2)
-        self.upconv2 = nn.ConvTranspose2d(256, 128, kernel_size=2, stride=2)
-        self.upconv3 = nn.ConvTranspose2d(128, 64, kernel_size=2, stride=2)
+        self.upconv1 = nn.ConvTranspose3d(512, 256, kernel_size=2, stride=2)
+        self.upconv2 = nn.ConvTranspose3d(256, 128, kernel_size=2, stride=2)
+        self.upconv3 = nn.ConvTranspose3d(128, 64, kernel_size=2, stride=2)
 
-        self.dec1 = ConvBlock(512, 256)
-        self.dec2 = ConvBlock(256, 128)
-        self.dec3 = ConvBlock(128, 64)
+        self.dec1 = ConvBlock3D(512, 256)
+        self.dec2 = ConvBlock3D(256, 128)
+        self.dec3 = ConvBlock3D(128, 64)
 
-        self.final_conv = nn.Conv2d(64, out_channels, kernel_size=1)
+        self.final_conv = nn.Conv3d(64, out_channels, kernel_size=1)
 
     def forward(self, x):
         # Encoding path
@@ -135,3 +135,4 @@ class UNetWithAttention_HSI(nn.Module):
 
         out = self.final_conv(d3)
         return out
+
