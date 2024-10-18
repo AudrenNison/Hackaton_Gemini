@@ -88,9 +88,9 @@ class TemporalAttention(nn.Module):
         attention_output = torch.bmm(attention_weights, x_flat).view(B, T, C, H, W)
         return attention_output
 
-class UNetWithAttention_HSI_3D(nn.Module):
+class UNetWithAttention_HSI(nn.Module):
     def __init__(self, in_channels, out_channels):
-        super(UNetWithAttention_HSI_3D, self).__init__()
+        super(UNetWithAttention_HSI, self).__init__()
         self.enc1 = ConvBlock3D(in_channels, 64)
         self.enc2 = ConvBlock3D(64, 128)
         self.enc3 = ConvBlock3D(128, 256)
