@@ -118,7 +118,7 @@ def train_model(
     loss_values = [] # Defining a list to store loss values after every epoch
 
     # Defining the model, optimizer and loss function
-    model = UNetWithAttention_HSI(in_channels=input_channels).to(device).train()
+    # model = UNetWithAttention_HSI(in_channels=input_channels).to(device).train()
     optimizer = optim.Adam(model.parameters(), lr=learning_rate)
     loss_function = nn.CrossEntropyLoss() 
 
